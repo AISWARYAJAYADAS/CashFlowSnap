@@ -23,30 +23,37 @@ class MainActivity : ComponentActivity() {
             CashFlowSnapTheme(darkMode = darkMode.value) {
                 SnapScreen(
                     snaps = snaps.value,
-                    onAddExpense = { amount, category, date, note ->
+                    onAddExpense = { amount, category, date, note ,uri->
                         val newExpense = Expense(
                             id = snaps.value.size + 1,
-                            amount = amount,
+                            amount = amount.toFloatOrNull() ?: 0f,
                             category = category,
                             date = date,
-                            note = note
+                            note = note,
+                            picUri = uri
                         )
                         snaps.value += newExpense
                     },
                     onDeleteExpense = { index ->
                         snaps.value = snaps.value.filterIndexed { i, _ -> i != index }
                     },
-                    onEditExpense = { index, amount, category, date, note ->
-                        val updatedExpense = Expense(
-                            id = snaps.value[index].id,
-                            amount = amount,
-                            category = category,
-                            date = date,
-                            note = note
-                        )
-                        snaps.value = snaps.value.toMutableList().apply { set(index, updatedExpense) }
+                    onEditExpense = { index, amount, category, date, note,uri ->
+                        if (index in snaps.value.indices) {
+                            val updatedExpense = Expense(
+                                id = snaps.value[index].id,
+                                amount = amount.toFloatOrNull() ?: snaps.value[index].amount,
+                                category = category,
+                                date = date,
+                                note = note,
+                                picUri = uri
+                            )
+                            snaps.value = snaps.value.mapIndexed { i, expense ->
+                                if (i == index) updatedExpense else expense
+                            }
+                        }
                     },
-                    onToggleDarkMode = { darkMode.value = !darkMode.value }
+                    onToggleDarkMode = { darkMode.value = !darkMode.value },
+                    darkMode = darkMode.value
                 )
             }
         }
@@ -56,29 +63,18 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun GreetingPreview() {
         val sampleExpenses = listOf(
-            Expense(
-                id = 1,
-                amount = "20",
-                category = "Food",
-                date = "March 2",
-                note = "Pizza"
-            ),
-            Expense(
-                id = 2,
-                amount = "50",
-                category = "Transport",
-                date = "March 3",
-                note = "Bus fare"
-            )
+            Expense(id = 1, amount = 20f, category = "Food", date = "March 2", note = "Pizza"),
+            Expense(id = 2, amount = 50f, category = "Transport", date = "March 3", note = "Bus fare")
         )
 
         CashFlowSnapTheme(darkMode = true) {
             SnapScreen(
                 snaps = sampleExpenses,
-                onAddExpense = { _, _, _, _ -> },
+                onAddExpense = { _, _, _, _, _ -> },
+                onEditExpense = { _, _, _, _, _, _ -> },
                 onDeleteExpense = { _ -> },
-                onEditExpense = { _, _, _, _, _ -> },
-                onToggleDarkMode = {}
+                onToggleDarkMode = {},
+                darkMode = true
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.example.cashflowsnap.ui.screens
 
+import android.net.Uri
 import androidx.compose.runtime.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,9 +19,10 @@ import com.example.cashflowsnap.ui.components.ExpenseInputDialog
 @Composable
 fun SnapScreen(
     snaps: List<Expense>,
-    onAddExpense: (String, String, String, String) -> Unit,
+    onAddExpense: (String, String, String, String, Uri?) -> Unit,
     onDeleteExpense: (Int) -> Unit,
-    onEditExpense: (Int, String, String, String, String) -> Unit,
+    onEditExpense: (Int, String, String, String, String, Uri?) -> Unit,
+    darkMode:Boolean,
     onToggleDarkMode: () -> Unit
 ) {
     var showEditDialog by remember { mutableStateOf(false) }
@@ -31,7 +33,7 @@ fun SnapScreen(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        CustomTopAppBar(darkMode = false, onToggleDarkMode = onToggleDarkMode)
+        CustomTopAppBar(darkMode = darkMode, onToggleDarkMode = onToggleDarkMode)
         if (snaps.isEmpty()) {
             Text(
                 text = "No expenses added yet",
@@ -62,11 +64,11 @@ fun SnapScreen(
         val expense = snaps[editIndex]
         ExpenseInputDialog(
             onDismiss = { showEditDialog = false },
-            onAddExpense = { amount, category, date, note ->
-                onEditExpense(editIndex, amount, category, date, note)
+            onAddExpense = { amount, category, date, note, uri ->
+                onEditExpense(editIndex, amount, category, date, note, uri)
                 showEditDialog = false
             },
-            initialAmount = expense.amount,
+            initialAmount = expense.amount.toString(),
             initialCategory = expense.category,
             initialDate = expense.date,
             initialNote = expense.note

@@ -1,5 +1,6 @@
 package com.example.cashflowsnap.ui.components
 
+import android.net.Uri
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.*
@@ -8,7 +9,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.MaterialTheme
 
 @Composable
-fun AddExpenseFAB(onAddExpense: (String, String, String, String) -> Unit) {
+fun AddExpenseFAB(onAddExpense: (String, String, String, String, Uri?) -> Unit) {
     var showDialog by remember { mutableStateOf(false) }
 
     FloatingActionButton(
